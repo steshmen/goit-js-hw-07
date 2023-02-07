@@ -24,6 +24,9 @@ galleryRef.addEventListener('click', onClick);
 
 function onClick(evt) {
 	evt.preventDefault();
+	if (evt.target.className !== 'gallery__image') {
+		return
+	}
 	const originUrl = evt.target.dataset.source;
 	
 	const instance = basicLightbox.create(`
@@ -32,13 +35,16 @@ function onClick(evt) {
       src="${originUrl}"
       alt="${evt.target.alt}"
     >
-	`);
+	`, {
+		onShow: () => {
+			window.addEventListener('keydown', onClose);
+		},
+		onClose: () => {
+			window.removeEventListener('keydown', onClose);
+		}
+	});
 	instance.show();
-	escClose(instance);
-}
 
-function escClose(instance) {
-window.addEventListener('keydown', onClose);
 	function onClose(evt) {
 		if (evt.code === "Escape") {
 			instance.close();
